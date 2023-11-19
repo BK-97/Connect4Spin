@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InputManager : MonoBehaviour
+public class InputManager : Singleton<InputManager>
 {
     #region Params
     private Vector2 startTouchPos;
