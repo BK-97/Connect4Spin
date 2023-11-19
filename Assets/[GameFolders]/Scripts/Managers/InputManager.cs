@@ -15,8 +15,7 @@ public class InputManager : Singleton<InputManager>
     const float SWIPE_POWER_STARTER = 1;
     #endregion
     #region Events
-    public static FloatEvent OnSwipeUp = new FloatEvent();
-    public static FloatEvent OnSwipeDown = new FloatEvent();
+    public static FloatEvent OnSwipe = new FloatEvent();
     #endregion
     private void Update()
     {
@@ -47,11 +46,10 @@ public class InputManager : Singleton<InputManager>
             return;
         }
         float newPower = SWIPE_POWER_STARTER / swipeTime;
-        Debug.Log(newPower);
         if (distance > 0)
-            OnSwipeDown.Invoke(newPower);
-        else
-            OnSwipeUp.Invoke(newPower);
+            newPower *= -1;
+        Debug.Log(newPower);
+        OnSwipe.Invoke(newPower);
     }
 }
 public class FloatEvent : UnityEvent<float> { }
