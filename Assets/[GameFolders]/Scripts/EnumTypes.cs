@@ -1,0 +1,1 @@
+public enum TokenType { Green,Red,None}
