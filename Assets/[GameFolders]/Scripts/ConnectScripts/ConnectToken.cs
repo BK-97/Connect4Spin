@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-public class ConnecToken : MonoBehaviour
+public class ConnectToken : MonoBehaviour
 {
-    [HideInInspector]
-    public TokenType currentType=TokenType.None;
+    private TokenType currentType=TokenType.None;
     public MeshRenderer renderer;
     public void Initalize(TokenType newType)
     {
@@ -25,8 +24,18 @@ public class ConnecToken : MonoBehaviour
     public void Use(Transform targetTransform,float moveTime)
     {
         transform.SetParent(targetTransform);
+        targetTransform.gameObject.GetComponent<ConnectCircle>().TakeToken(this);
         transform.DOLocalMove(Vector3.zero, moveTime).SetEase(Ease.Linear);
-        transform.DOLocalRotate(Vector3.zero, moveTime).SetEase(Ease.Linear);
-        //spinAroundAnimation
+        transform.DOLocalRotate(new Vector3(360, 0f, 0f), moveTime, RotateMode.FastBeyond360)
+           .SetEase(Ease.Linear);
+    }
+    public void WinnerAnimation()
+    {
+        transform.DOLocalRotate(new Vector3(360f, 0f, 0f), 1f, RotateMode.FastBeyond360)
+           .SetEase(Ease.Linear);
+    }
+    public TokenType GetInfo()
+    {
+        return currentType;
     }
 }

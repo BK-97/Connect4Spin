@@ -5,16 +5,19 @@ using UnityEngine;
 public class ConnectCircle : MonoBehaviour
 {
     private bool hasObject=false;
-    private ConnecToken currentToken;
+    private ConnectToken currentToken;
 
-    public void TakeToken(ConnecToken takenToken)
+    public void TakeToken(ConnectToken takenToken)
     {
         currentToken = takenToken;
         hasObject = true;
     }
     public bool CheckIsAvailable()
     {
-        Debug.Log(!hasObject);
         return !hasObject;
+    }
+    public ConnectToken GetToken()
+    {
+        return currentToken;
     }
 }

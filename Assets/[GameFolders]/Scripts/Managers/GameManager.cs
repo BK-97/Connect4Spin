@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
 public class GameManager : Singleton<GameManager>
 {
     public enum GameStates { greenTokenSession,greenSpinSession, redTokenSession, redSpinSession }
     [SerializeField]
     private GameStates currentState;
+    public bool isGameEnded { get; private set; }
     #region Events
     public static UnityEvent OnGameStart = new UnityEvent();
     public static UnityEvent OnGreenTokenSessionStart = new UnityEvent();
@@ -15,6 +16,7 @@ public class GameManager : Singleton<GameManager>
     public static UnityEvent OnGreenSpinSessionStart = new UnityEvent();
     public static UnityEvent OnRedSpinSessionStart = new UnityEvent();
     public static UnityEvent OnCheckStatus = new UnityEvent();
+    public static TokenTypeEvent OnGameEnd = new TokenTypeEvent();
     public static GameStatusEvent OnGameStatusChange = new GameStatusEvent();
     #endregion
     public bool isGameStarted { get; private set; }
@@ -22,23 +24,38 @@ public class GameManager : Singleton<GameManager>
     {
         OnGameStart.AddListener(GameStart);
         OnGameStatusChange.AddListener(ChangeState);
-        OnCheckStatus.AddListener(CheckStatus);
+        OnGameEnd.AddListener(HandleGameEnd);
     }
     private void OnDisable()
     {
         OnGameStart.RemoveListener(GameStart);
         OnGameStatusChange.RemoveListener(ChangeState);
-        OnCheckStatus.RemoveListener(CheckStatus);
+        OnGameEnd.RemoveListener(HandleGameEnd);
     }
-    private void CheckStatus()
+    public void StatusChecked()
     {
+        Debug.Log("Status Checked");
+
         if (currentState == GameStates.greenSpinSession)
             ChangeState(GameStates.redTokenSession);
         else if(currentState == GameStates.redSpinSession)
             ChangeState(GameStates.greenTokenSession);
     }
+    private void HandleGameEnd(TokenType winnerType)
+    {
+        isGameEnded = true;
+        isGameStarted = false;
+        SceneManager.UnloadSceneAsync("Gameplay");
+        StartCoroutine(WaitForNewGame());
+    }
+    IEnumerator WaitForNewGame()
+    {
+        yield return new WaitForSeconds(0.5f);
+        yield return SceneManager.LoadSceneAsync("Gameplay", LoadSceneMode.Additive);
+    }
     private void GameStart()
     {
+        isGameEnded = false;
         isGameStarted = true;
         ChangeState(GameStates.greenTokenSession);
         Debug.Log("gameStarted!");
@@ -71,3 +88,4 @@ public class GameManager : Singleton<GameManager>
     }
 }
 public class GameStatusEvent : UnityEvent<GameManager.GameStates> { }
+public class TokenTypeEvent : UnityEvent<TokenType> { }

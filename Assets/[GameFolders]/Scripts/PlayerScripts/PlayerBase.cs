@@ -11,7 +11,7 @@ public class PlayerBase : MonoBehaviour
     [SerializeField]
     private ConnectController currentConnects;
     public TokenHolder TokenHolder;
-    public const float TOKEN_MOVE_TIME = 1;
+    public const float TOKEN_MOVE_TIME = 0.5f;
     public virtual void ReadyForTokenPut()
     {
         canUseToken = true;

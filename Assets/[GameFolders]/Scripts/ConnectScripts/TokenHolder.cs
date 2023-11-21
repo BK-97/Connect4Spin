@@ -5,7 +5,7 @@ using UnityEngine;
 public class TokenHolder : MonoBehaviour
 {
     public TokenType holderTokensType;
-    public List<ConnecToken> tokens;
+    public List<ConnectToken> tokens;
     private void Start()
     {
         for (int i = 0; i < tokens.Count; i++)
