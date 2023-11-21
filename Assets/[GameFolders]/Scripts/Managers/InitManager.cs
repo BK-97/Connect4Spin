@@ -16,6 +16,7 @@ public class InitManager : Singleton<InitManager>
         yield return SceneManager.LoadSceneAsync("UI", LoadSceneMode.Additive);
         yield return new WaitForSeconds(1);
         yield return SceneManager.LoadSceneAsync("Gameplay", LoadSceneMode.Additive);
+        GameManager.OnGameplaySceneLoaded.Invoke();
         Destroy(gameObject);
     }
 

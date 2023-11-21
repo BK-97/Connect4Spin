@@ -25,6 +25,7 @@ public class GreenController : PlayerBase
         base.TokenUse();
         StartCoroutine(WaitForTokenArrive());
     }
+
     IEnumerator WaitForTokenArrive()
     {
         yield return new WaitForSeconds(TOKEN_MOVE_TIME + 0.1f);

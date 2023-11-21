@@ -24,10 +24,12 @@ public class InputManager : Singleton<InputManager>
     #endregion
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
+        if (!GameManager.Instance.isLevelStarted&&GameManager.Instance.isGameStarted)
         {
-            if (Input.touchCount > 0)
-                GameManager.OnGameStart.Invoke();
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+            {
+                GameManager.OnLevelStart.Invoke();
+            }
             return;
         }
 

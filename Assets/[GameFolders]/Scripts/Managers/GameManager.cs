@@ -8,34 +8,45 @@ public class GameManager : Singleton<GameManager>
     public enum GameStates { greenTokenSession,greenSpinSession, redTokenSession, redSpinSession }
     [SerializeField]
     private GameStates currentState;
-    public bool isGameEnded { get; private set; }
+    public bool isLevelFinished{ get; private set; }
+    public bool isLevelStarted{ get; private set; }
+    public bool isGameStarted{ get; private set; }
     #region Events
     public static UnityEvent OnGameStart = new UnityEvent();
+    public static UnityEvent OnGameEnd = new UnityEvent();
+    public static UnityEvent OnGameplaySceneLoaded = new UnityEvent();
+
+    public static UnityEvent OnLevelStart = new UnityEvent();
+    public static TokenTypeEvent OnLevelFinished = new TokenTypeEvent();
+
     public static UnityEvent OnGreenTokenSessionStart = new UnityEvent();
     public static UnityEvent OnRedTokenSessionStart = new UnityEvent();
     public static UnityEvent OnGreenSpinSessionStart = new UnityEvent();
     public static UnityEvent OnRedSpinSessionStart = new UnityEvent();
     public static UnityEvent OnCheckStatus = new UnityEvent();
-    public static TokenTypeEvent OnGameEnd = new TokenTypeEvent();
+    public static TokenTypeEvent OnFeedback = new TokenTypeEvent();
     public static GameStatusEvent OnGameStatusChange = new GameStatusEvent();
+
     #endregion
-    public bool isGameStarted { get; private set; }
     private void OnEnable()
     {
-        OnGameStart.AddListener(GameStart);
+        OnLevelStart.AddListener(LevelStarted);
+        OnGameStart.AddListener(() => isGameStarted = true);
         OnGameStatusChange.AddListener(ChangeState);
-        OnGameEnd.AddListener(HandleGameEnd);
+        OnLevelFinished.AddListener(HandleGameEnd);
+        OnGameEnd.AddListener(()=>StartCoroutine(StartNewGame()));
+
     }
     private void OnDisable()
     {
-        OnGameStart.RemoveListener(GameStart);
+        OnLevelStart.RemoveListener(LevelStarted);
+        OnGameStart.RemoveListener(() => isGameStarted = true);
         OnGameStatusChange.RemoveListener(ChangeState);
-        OnGameEnd.RemoveListener(HandleGameEnd);
+        OnLevelFinished.RemoveListener(HandleGameEnd);
+        OnGameEnd.RemoveListener(() => StartCoroutine(StartNewGame()));
     }
     public void StatusChecked()
     {
-        Debug.Log("Status Checked");
-
         if (currentState == GameStates.greenSpinSession)
             ChangeState(GameStates.redTokenSession);
         else if(currentState == GameStates.redSpinSession)
@@ -43,23 +54,21 @@ public class GameManager : Singleton<GameManager>
     }
     private void HandleGameEnd(TokenType winnerType)
     {
-        isGameEnded = true;
-        isGameStarted = false;
-        SceneManager.UnloadSceneAsync("Gameplay");
-        StartCoroutine(WaitForNewGame());
+        OnFeedback.Invoke(winnerType);
+        isLevelFinished = true;
     }
-    IEnumerator WaitForNewGame()
+    IEnumerator StartNewGame()
     {
+        yield return SceneManager.UnloadSceneAsync("Gameplay");
+        isLevelStarted = false;
         yield return new WaitForSeconds(0.5f);
         yield return SceneManager.LoadSceneAsync("Gameplay", LoadSceneMode.Additive);
+        OnGameplaySceneLoaded.Invoke();
     }
-    private void GameStart()
+    private void LevelStarted()
     {
-        isGameEnded = false;
-        isGameStarted = true;
+        isLevelStarted = true;
         ChangeState(GameStates.greenTokenSession);
-        Debug.Log("gameStarted!");
-
     }
     private void ChangeState(GameStates newState)
     {

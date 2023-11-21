@@ -59,7 +59,7 @@ public class WinChecker : MonoBehaviour
     IEnumerator WaitForChecks()
     {
         yield return new WaitForSeconds(0.2f);
-        if (!GameManager.Instance.isGameEnded)
+        if (!GameManager.Instance.isLevelFinished)
             GameManager.Instance.StatusChecked();
     }
     private void CheckDiagonalLines()
@@ -97,13 +97,11 @@ public class WinChecker : MonoBehaviour
         }
         if (status)
         {
-            GameManager.OnGameEnd.Invoke(_cachedTokenType);
+            GameManager.OnLevelFinished.Invoke(_cachedTokenType);
             for (int i = 0; i < tokenList.Count; i++)
             {
                 tokenList[i].WinnerAnimation();
             }
-            Debug.Log("Winner= " + _cachedTokenType);
-
         }
     }
 }
