@@ -6,13 +6,13 @@ public class WinChecker : MonoBehaviour
 {
     public RaycastChecker[] lineCheckers;
     [SerializeField]
-    private List<ConnectCircle> row1 = new List<ConnectCircle>();
+    private List<ConnectCircle> column1 = new List<ConnectCircle>();
     [SerializeField]
-    private List<ConnectCircle> row2 = new List<ConnectCircle>();
+    private List<ConnectCircle> column2 = new List<ConnectCircle>();
     [SerializeField]
-    private List<ConnectCircle> row3 = new List<ConnectCircle>();
+    private List<ConnectCircle> column3 = new List<ConnectCircle>();
     [SerializeField]
-    private List<ConnectCircle> row4 = new List<ConnectCircle>();
+    private List<ConnectCircle> column4 = new List<ConnectCircle>();
     [SerializeField]
     private List<ConnectCircle> diagonal1 = new List<ConnectCircle>();
     [SerializeField]
@@ -27,40 +27,43 @@ public class WinChecker : MonoBehaviour
     }
     private void Calculate()
     {
-        Debug.Log("CheckStatus");
+        StartCoroutine(WaitForChecks());
         for (int i = 0; i < lineCheckers.Length; i++)
         {
             lineCheckers[i].Raycast();
         }
         CheckRowLines();
         CheckDiagonalLines();
+
     }
     private void CheckRowLines()
     {
-        row1.Clear();
-        row2.Clear();
-        row3.Clear();
-        row4.Clear();
+        column1.Clear();
+        column2.Clear();
+        column3.Clear();
+        column4.Clear();
         for (int i = 0; i < lineCheckers.Length; i++)
         {
-            row1.Add(lineCheckers[i].connectCirclesList[0]);
-            row2.Add(lineCheckers[i].connectCirclesList[1]);
-            row3.Add(lineCheckers[i].connectCirclesList[2]);
-            row4.Add(lineCheckers[i].connectCirclesList[3]);
+            column1.Add(lineCheckers[i].connectCirclesList[0]);
+            column2.Add(lineCheckers[i].connectCirclesList[1]);
+            column3.Add(lineCheckers[i].connectCirclesList[2]);
+            column4.Add(lineCheckers[i].connectCirclesList[3]);
         }
-        CheckCircles(row1);
-        CheckCircles(row2);
-        CheckCircles(row3);
-        CheckCircles(row4);
+        CheckCircles(column1);
+        CheckCircles(column2);
+        CheckCircles(column3);
+        CheckCircles(column4);
         CheckCircles(diagonal1);
         CheckCircles(diagonal2);
-        StartCoroutine(WaitForChecks());
     }
     IEnumerator WaitForChecks()
     {
         yield return new WaitForSeconds(0.2f);
         if (!GameManager.Instance.isLevelFinished)
+        {
+            Debug.Log("StatusChecked");
             GameManager.Instance.StatusChecked();
+        }
     }
     private void CheckDiagonalLines()
     {
@@ -90,6 +93,7 @@ public class WinChecker : MonoBehaviour
     {
         TokenType _cachedTokenType = tokenList[0].GetInfo();
         bool status = true;
+
         for (int i = 0; i < tokenList.Count; i++)
         {
             if (tokenList[i].GetInfo() != _cachedTokenType)

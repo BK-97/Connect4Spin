@@ -22,9 +22,12 @@ public class InputManager : Singleton<InputManager>
     public static ConnectsEvent OnClickedConnects = new ConnectsEvent();
     public static CircleEvent OnClickedCircle = new CircleEvent();
     #endregion
+
     private void Update()
     {
-        if (!GameManager.Instance.isLevelStarted&&GameManager.Instance.isGameStarted)
+        if (!GameManager.Instance.isGameStarted)
+            return;
+        if (!GameManager.Instance.isLevelStarted)
         {
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
             {

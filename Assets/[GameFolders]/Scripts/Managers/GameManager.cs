@@ -24,7 +24,7 @@ public class GameManager : Singleton<GameManager>
     public static UnityEvent OnGreenSpinSessionStart = new UnityEvent();
     public static UnityEvent OnRedSpinSessionStart = new UnityEvent();
     public static UnityEvent OnCheckStatus = new UnityEvent();
-    public static TokenTypeEvent OnFeedback = new TokenTypeEvent();
+    public static StringEvent OnFeedback = new StringEvent();
     public static GameStatusEvent OnGameStatusChange = new GameStatusEvent();
 
     #endregion
@@ -48,17 +48,23 @@ public class GameManager : Singleton<GameManager>
     public void StatusChecked()
     {
         if (currentState == GameStates.greenSpinSession)
+        {
             ChangeState(GameStates.redTokenSession);
-        else if(currentState == GameStates.redSpinSession)
+            return;
+        }
+        else if (currentState == GameStates.redSpinSession)
             ChangeState(GameStates.greenTokenSession);
     }
     private void HandleGameEnd(TokenType winnerType)
     {
-        OnFeedback.Invoke(winnerType);
         isLevelFinished = true;
     }
     IEnumerator StartNewGame()
     {
+        int cachedPlayCount=PlayerPrefs.GetInt("PlayCount", 0);
+        if (cachedPlayCount<3)
+            PlayerPrefs.SetInt("PlayCount", cachedPlayCount + 1);
+
         yield return SceneManager.UnloadSceneAsync("Gameplay");
         isLevelStarted = false;
         yield return new WaitForSeconds(0.5f);
@@ -77,15 +83,20 @@ public class GameManager : Singleton<GameManager>
         {
             case GameStates.greenTokenSession:
                 OnGreenTokenSessionStart.Invoke();
+                OnFeedback.Invoke("Green player use a token!");
                 break;
             case GameStates.greenSpinSession:
                 OnGreenSpinSessionStart.Invoke();
+                OnFeedback.Invoke("Green Player Swipe and Spin!");
                 break;
             case GameStates.redTokenSession:
                 OnRedTokenSessionStart.Invoke();
+                OnFeedback.Invoke("Red Player Use a Token!");
                 break;
             case GameStates.redSpinSession:
                 OnRedSpinSessionStart.Invoke();
+                OnFeedback.Invoke("Red Player Swipe and Spin!");
+
                 break;
             default:
                 break;
@@ -98,3 +109,4 @@ public class GameManager : Singleton<GameManager>
 }
 public class GameStatusEvent : UnityEvent<GameManager.GameStates> { }
 public class TokenTypeEvent : UnityEvent<TokenType> { }
+public class StringEvent : UnityEvent<string> { }

@@ -13,13 +13,24 @@ public class FeedbackPanel : PanelBase
     }
     private void OnEnable()
     {
-        GameManager.OnFeedback.AddListener(WinPanel);
+        GameManager.OnLevelFinished.AddListener(WinPanel);
         GameManager.OnGameEnd.AddListener(HidePanel);
+        GameManager.OnFeedback.AddListener(Feedback);
     }
     private void OnDisable()
     {
-        GameManager.OnFeedback.RemoveListener(WinPanel);
+        GameManager.OnLevelFinished.RemoveListener(WinPanel);
         GameManager.OnGameEnd.RemoveListener(HidePanel);
+        GameManager.OnFeedback.RemoveListener(Feedback);
+    }
+    private void Feedback(string feedbackString)
+    {
+        if (PlayerPrefs.GetInt("PlayCount", 0) >= 3)
+            return;
+        feedbackText.text = feedbackString;
+        feedbackText.color = Color.white;
+        ShowPanel();
+        punchTween = feedbackText.gameObject.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
     }
     private void WinPanel(TokenType winnerType)
     {

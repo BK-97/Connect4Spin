@@ -29,6 +29,7 @@ public class GreenController : PlayerBase
     IEnumerator WaitForTokenArrive()
     {
         yield return new WaitForSeconds(TOKEN_MOVE_TIME + 0.1f);
+        Debug.Log("changeStatus");
         GameManager.OnGameStatusChange.Invoke(GameManager.GameStates.greenSpinSession);
     }
 }
