@@ -32,6 +32,8 @@ public class WinChecker : MonoBehaviour
         {
             lineCheckers[i].Raycast();
         }
+        if (GameManager.Instance.isLevelFinished)
+            return;
         CheckRowLines();
         CheckDiagonalLines();
 
@@ -61,7 +63,6 @@ public class WinChecker : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         if (!GameManager.Instance.isLevelFinished)
         {
-            Debug.Log("StatusChecked");
             GameManager.Instance.StatusChecked();
         }
     }

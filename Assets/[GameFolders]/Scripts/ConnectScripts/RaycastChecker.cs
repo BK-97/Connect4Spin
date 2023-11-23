@@ -9,7 +9,7 @@ public class RaycastChecker : MonoBehaviour
     {
         connectCirclesList.Clear();
         Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 35f);
 
         System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
@@ -45,6 +45,13 @@ public class RaycastChecker : MonoBehaviour
                 status = false;
         }
         if (status)
-            Debug.Log("Winner= "+ _cachedTokenType);
+        {
+            GameManager.OnLevelFinished.Invoke(_cachedTokenType);
+            for (int i = 0; i < tokenList.Count; i++)
+            {
+                tokenList[i].WinnerAnimation();
+            }
+
+        }
     }
 }
